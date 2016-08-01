@@ -98,7 +98,7 @@ public class SudokuBoard {
 		board[row][col] = value;
 		if(!isOk(board, row, col)) {
 			board[row][col] = 0; //Undo
-			throw new IllegalArgumentException("The value " + value + " will result in unsolveable sudoku board");
+			throw new IllegalArgumentException("The value " + value + " will result in unsolvable sudoku board");
 		}
 	}
 	
