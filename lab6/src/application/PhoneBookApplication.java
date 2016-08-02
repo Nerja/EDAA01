@@ -1,11 +1,19 @@
 package application;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.Locale;
 
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.layout.BorderPane;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-//import phonebook.MapPhoneBook;
+import phonebook.MapPhoneBook;
 import phonebook.PhoneBook;
 
 public class PhoneBookApplication extends Application{
@@ -30,7 +38,7 @@ public class PhoneBookApplication extends Application{
 
 	@Override
 	public void start(Stage primaryStage) throws Exception {
-//		phoneBook = new MapPhoneBook();
+		loadFile();
 		
 		// set default locale english 
 		Locale.setDefault(Locale.ENGLISH);
@@ -47,9 +55,37 @@ public class PhoneBookApplication extends Application{
 		
 	}
 
+	private void loadFile() throws IOException, FileNotFoundException, ClassNotFoundException {
+		if(Dialogs.confirmDialog("S", "p", "Should we read from a file?")) {
+			 FileChooser fs = new FileChooser();
+			 fs.setTitle("Choose file");
+			 File file = fs.showOpenDialog(null);
+			 ObjectInputStream ois = new ObjectInputStream(new FileInputStream(file));
+			 phoneBook = (MapPhoneBook)ois.readObject();
+			 ois.close();
+		} else {
+			phoneBook = new MapPhoneBook();
+		}
+	}
+
+	
+	
 	@Override
-	public void stop(){
-		// Here you can place any action to be done when the application is closed, i.e. save phone book to file.
+	public void stop() {
+		if(Dialogs.confirmDialog("S", "p", "Should we save the phoneBook?")) {
+			FileChooser fs = new FileChooser();
+			fs.setTitle("Choose file");
+			File file = fs.showSaveDialog(null);
+			try {
+				ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(file));
+				oos.writeObject(phoneBook);
+				oos.flush();
+				oos.close();
+			} catch (FileNotFoundException e) {
+			} catch (IOException e) {
+			}
+			
+		}
 	}
 	
 }

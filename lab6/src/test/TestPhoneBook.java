@@ -16,7 +16,7 @@ public class TestPhoneBook {
 	
 	@Before
 	public void setUp() throws Exception {
-//		pb = new MapPhoneBook();
+		pb = new MapPhoneBook();
 	}
 
 	@After

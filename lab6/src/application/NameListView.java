@@ -20,7 +20,7 @@ public class NameListView extends BorderPane {
 	private ListView<String> listView;
 	private ObservableList<String> obsList;
 	private PhoneBook phoneBook;
-	private Button addNumberButton;
+	private Button addNumberButton, remove, removeNumber;
 	private Label numbersLabel;
 	
 	/** Creates the list view for the names.Also creates buttons for adding/removing names/numbers.
@@ -50,10 +50,16 @@ public class NameListView extends BorderPane {
 		addNumberButton = new Button("Add number");
 		addNumberButton.setOnAction(e -> addNumber());
 		
+		remove = new Button("Remove");
+		remove.setOnAction(e -> remove());
+		
+		removeNumber = new Button("Remove number");
+		removeNumber.setOnAction(e -> removeNumber());
+		
 		HBox buttonBox = new HBox();
 		buttonBox.setSpacing(5);
 		buttonBox.setPadding(new Insets(10, 10, 10, 10));
-		buttonBox.getChildren().addAll(numbersLabel, addButton, addNumberButton);
+		buttonBox.getChildren().addAll(numbersLabel, addButton, addNumberButton, remove, removeNumber);
 		setBottom(buttonBox);
 
 		// The method change is called when a row in the list view is selected. 
@@ -63,6 +69,8 @@ public class NameListView extends BorderPane {
 				int index = listView.getSelectionModel().getSelectedIndex();
 				if (index != -1) {
 					addNumberButton.setDisable(false);
+					remove.setDisable(false);
+					removeNumber.setDisable(false);
 					numbersLabel.setText(newValue + " " + phoneBook.findNumbers(newValue));
 				} else {
 					numbersLabel.setText("");
@@ -72,12 +80,33 @@ public class NameListView extends BorderPane {
 		clearSelection();	
 	}
 	
+	private void removeNumber() {
+		Optional<String> nbr = Dialogs.oneInputDialog("Remove number", "", "pls enter");
+		if(nbr.isPresent()) {
+			String name = listView.getSelectionModel().getSelectedItem();
+			phoneBook.removeNumber(name, nbr.get());
+			numbersLabel.setText(name + " " + phoneBook.findNumbers(name));
+			clearSelection();
+		}
+	}
+
+	private void remove() {
+		String name = listView.getSelectionModel().getSelectedItem();
+		if(Dialogs.confirmDialog("Remove", "", "Do you really want to remove " + name)) {
+			phoneBook.remove(name);
+			obsList.remove(name);
+			clearSelection();
+		}
+	}
+
 	/**
 	 * Clears all selections in the list view and disable all buttons except the
 	 * button for adding a name.
 	 */
 	public void clearSelection() {
 		addNumberButton.setDisable(true);
+		remove.setDisable(true);
+		removeNumber.setDisable(true);
 		numbersLabel.setText("");
 		listView.getSelectionModel().clearSelection();
 	}
